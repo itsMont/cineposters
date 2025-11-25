@@ -60,7 +60,7 @@ def add_movie(request):
             try:
                 api_key = OMDB_API
                 response = requests.get(
-                    f"http://www.omdbapi.com/?t={movie.title}&y={movie.year}&apikey={api_key}"
+                    f"http://www.omdbapi.com/?apikey={api_key}&t={movie.title}&y={movie.year}"
                 )
                 data = response.json()
                 
@@ -71,6 +71,10 @@ def add_movie(request):
                     movie.director = data.get('Director', '')
                     # En caso de tener género, agrega el primero
                     movie.genre = data.get('Genre').split(",")[0]
+                # En caso de error y no encontrar pelicula
+                elif data.get('Response') == 'False':
+                    messages.error(request, "Película no encontrada :(")
+                    return redirect('add_movie')
             except Exception as e:
                 print(f"Error al conectar con OMDB: {e}")
             
@@ -115,6 +119,8 @@ def edit_movie(request, movie_id):
                     movie.director = data.get('Director', '')
                     # En caso de tener género, agrega el primero
                     movie.genre = data.get('Genre').split(",")[0]
+                elif data.get('Response') == 'False':
+                    messages.error(request, "Película no encontrada :(")
             except Exception as e:
                 print(f"Error al conectar con OMDB: {e}")
             
