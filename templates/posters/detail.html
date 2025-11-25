@@ -1,19 +1,24 @@
 {% extends 'base.html' %}
+
 {% block title %}{{ movie.title }} - CinePosters{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-md-4">
         {% if movie.poster_url and movie.poster_url != 'N/A' %}
         <img src="{{ movie.poster_url }}" class="img-fluid rounded shadow" alt="{{ movie.title }}">
         {% else %}
-        <img src="https://via.placeholder.com/300x450/6c757d/ffffff?text=Poster+No+Disponible" class="img-fluid rounded shadow" alt="{{ movie.title }}">
+        <img src="https://via.placeholder.com/300x450/6c757d/ffffff?text=Poster+No+Disponible" 
+             class="img-fluid rounded shadow" alt="{{ movie.title }}">
         {% endif %}
     </div>
+    
     <div class="col-md-8">
         <div class="d-flex justify-content-between align-items-start mb-3">
             <h1>{{ movie.title }}</h1>
             <span class="badge bg-primary fs-6">{{ movie.get_genre_display }}</span>
         </div>
+        
         <div class="row mb-4">
             <div class="col-sm-6">
                 <p><strong><i class="bi bi-calendar-event"></i> Año:</strong> {{ movie.year }}</p>
@@ -22,10 +27,11 @@
                 <p><strong><i class="bi bi-person"></i> Director:</strong> {{ movie.director }}</p>
             </div>
         </div>
+        
         <div class="mb-4">
             <h5>Información Adicional</h5>
             <p><strong>Agregado por:</strong> {{ movie.added_by.username }}</p>
-            <p><strong>Fecha de agregado:</strong> {{ movie.added_date|date:"d M Y" }}</p>
+            <p><strong>Fecha de agregado:</strong> {{ movie.added_date|date:"d M Y H:i" }}</p>
             {% if movie.imdb_id %}
             <p>
                 <strong>IMDB ID:</strong> 
@@ -35,13 +41,60 @@
             </p>
             {% endif %}
         </div>
-        <div class="d-flex gap-2">
-            <a href="{% url 'movie_list' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver al Listado</a>
-            {% if user == movie.added_by or user.is_superuser %}
-            <button class="btn btn-outline-warning"><i class="bi bi-pencil"></i> Editar</button>
-            <button class="btn btn-outline-danger"><i class="bi bi-trash"></i> Eliminar</button>
+        
+        <!-- Botones de Acción CRUD -->
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'movie_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al Listado
+            </a>
+            
+            {% if user.is_authenticated and user == movie.added_by or user.is_superuser %}
+            <a href="{% url 'edit_movie' movie.id %}" class="btn btn-outline-warning">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'delete_movie' movie.id %}" class="btn btn-outline-danger">
+                <i class="bi bi-trash"></i> Eliminar
+            </a>
+            {% endif %}
+            
+            {% if user.is_authenticated %}
+            <a href="{% url 'add_movie' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Agregar Nueva
+            </a>
             {% endif %}
         </div>
     </div>
 </div>
+
+<!-- Películas Relacionadas (mismo género) -->
+{% if related_movies %}
+<div class="row mt-5">
+    <div class="col-12">
+        <h3 class="mb-4">Películas del mismo género</h3>
+        <div class="row">
+            {% for related_movie in related_movies %}
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card h-100">
+                    {% if related_movie.poster_url and related_movie.poster_url != 'N/A' %}
+                    <img src="{{ related_movie.poster_url }}" class="card-img-top" alt="{{ related_movie.title }}" 
+                         style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <img src="https://via.placeholder.com/200x300/6c757d/ffffff?text=Poster" 
+                         class="card-img-top" alt="{{ related_movie.title }}"
+                         style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ related_movie.title|truncatechars:20 }}</h6>
+                        <p class="card-text small text-muted">{{ related_movie.year }}</p>
+                        <a href="{% url 'movie_detail' related_movie.id %}" class="btn btn-sm btn-outline-primary w-100">
+                            Ver
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

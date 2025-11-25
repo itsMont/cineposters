@@ -1,27 +1,44 @@
 {% extends 'base.html' %}
+
 {% block title %}Registrarse - CinePosters{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <div class="card">
-            <div class="card-header text-center">
-                <h4 class="card-title mb-0"><i class="bi bi-person-plus"></i> Crear Cuenta</h4>
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white text-center">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-person-plus"></i> Crear Cuenta
+                </h4>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <form method="post">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Nombre de Usuario</label>
-                        <input type="text" name="username" class="form-control" id="username" required minlength="3" maxlength="150">
-                        <div class="form-text">Requerido. 150 caracteres o menos. Solo letras, números y @/./+/-/_</div>
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Por favor corrige los errores below.
                     </div>
+                    {% endif %}
+                    
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" id="email" required>
+                        <label for="id_username" class="form-label">Nombre de Usuario</label>
+                        <input type="text" name="username" class="form-control" id="id_username" 
+                               required maxlength="150" autofocus
+                               value="{{ form.username.value|default:'' }}">
+                        <div class="form-text">
+                            Requerido. 150 caracteres o menos. Solo letras, números y @/./+/-/_
+                        </div>
+                        {% for error in form.username.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
                     </div>
+                    
                     <div class="mb-3">
-                        <label for="password1" class="form-label">Contraseña</label>
-                        <input type="password" name="password1" class="form-control" id="password1" required>
+                        <label for="id_password1" class="form-label">Contraseña</label>
+                        <input type="password" name="password1" class="form-control" id="id_password1" 
+                               required>
                         <div class="form-text">
                             <ul class="small">
                                 <li>Tu contraseña no puede ser demasiado similar a tu otra información personal.</li>
@@ -30,17 +47,35 @@
                                 <li>Tu contraseña no puede ser completamente numérica.</li>
                             </ul>
                         </div>
+                        {% for error in form.password1.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
                     </div>
-                    <div class="mb-3">
-                        <label for="password2" class="form-label">Confirmar Contraseña</label>
-                        <input type="password" name="password2" class="form-control" id="password2" required>
+                    
+                    <div class="mb-4">
+                        <label for="id_password2" class="form-label">Confirmar Contraseña</label>
+                        <input type="password" name="password2" class="form-control" id="id_password2" 
+                               required>
+                        <div class="form-text">
+                            Introduce la misma contraseña para verificación.
+                        </div>
+                        {% for error in form.password2.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
                     </div>
+                    
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Registrarse</button>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-person-check"></i> Registrarse
+                        </button>
                     </div>
                 </form>
-                <div class="text-center mt-3">
-                    <p class="mb-0">¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+                
+                <div class="text-center mt-4">
+                    <p class="mb-2">¿Ya tienes cuenta?</p>
+                    <a href="{% url 'login' %}" class="btn btn-outline-success">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </a>
                 </div>
             </div>
         </div>

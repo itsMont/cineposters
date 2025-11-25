@@ -24,6 +24,12 @@ class MovieForm(forms.ModelForm):
                 'class': 'form-select'
             }),
         }
+        labels = {
+            'title': 'Título',
+            'year': 'Año de estreno',
+            'director': 'Director',
+            'genre': 'Género'
+        }
     
     def clean_year(self):
         year = self.cleaned_data.get('year')
