@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}{{ movie.title }} - CinePosters{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        {% if movie.poster_url and movie.poster_url != 'N/A' %}
+        <img src="{{ movie.poster_url }}" class="img-fluid rounded shadow" alt="{{ movie.title }}">
+        {% else %}
+        <img src="https://via.placeholder.com/300x450/6c757d/ffffff?text=Poster+No+Disponible" class="img-fluid rounded shadow" alt="{{ movie.title }}">
+        {% endif %}
+    </div>
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <h1>{{ movie.title }}</h1>
+            <span class="badge bg-primary fs-6">{{ movie.get_genre_display }}</span>
+        </div>
+        <div class="row mb-4">
+            <div class="col-sm-6">
+                <p><strong><i class="bi bi-calendar-event"></i> Año:</strong> {{ movie.year }}</p>
+            </div>
+            <div class="col-sm-6">
+                <p><strong><i class="bi bi-person"></i> Director:</strong> {{ movie.director }}</p>
+            </div>
+        </div>
+        <div class="mb-4">
+            <h5>Información Adicional</h5>
+            <p><strong>Agregado por:</strong> {{ movie.added_by.username }}</p>
+            <p><strong>Fecha de agregado:</strong> {{ movie.added_date|date:"d M Y" }}</p>
+            {% if movie.imdb_id %}
+            <p>
+                <strong>IMDB ID:</strong> 
+                <a href="https://www.imdb.com/title/{{ movie.imdb_id }}" target="_blank" class="text-decoration-none">
+                    {{ movie.imdb_id }} <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+            </p>
+            {% endif %}
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'movie_list' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver al Listado</a>
+            {% if user == movie.added_by or user.is_superuser %}
+            <button class="btn btn-outline-warning"><i class="bi bi-pencil"></i> Editar</button>
+            <button class="btn btn-outline-danger"><i class="bi bi-trash"></i> Eliminar</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

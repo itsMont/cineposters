@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Películas - CinePosters{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3">Cartelera de Películas</h1>
+            {% if user.is_authenticated %}
+            <a href="{% url 'add_movie' %}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Agregar Película</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <form method="get" class="search-form">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar películas..." value="{{ request.GET.search }}">
+                <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <form method="get" class="d-flex">
+            <select name="genre" class="form-select" onchange="this.form.submit()">
+                <option value="">Todos los géneros</option>
+                {% for genre_value, genre_name in genres %}
+                <option value="{{ genre_value }}" {% if request.GET.genre == genre_value %}selected{% endif %}>{{ genre_name }}</option>
+                {% endfor %}
+            </select>
+            {% if request.GET.search or request.GET.genre %}
+            <a href="{% url 'movie_list' %}" class="btn btn-outline-secondary ms-2"><i class="bi bi-x-circle"></i></a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+{% if movies %}
+<div class="row">
+    {% for movie in movies %}
+    <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+        <div class="card movie-card h-100">
+            {% if movie.poster_url and movie.poster_url != 'N/A' %}
+            <img src="{{ movie.poster_url }}" class="card-img-top poster-img" alt="{{ movie.title }}" onerror="this.src='https://via.placeholder.com/300x450/6c757d/ffffff?text=Poster+No+Disponible'">
+            {% else %}
+            <img src="https://via.placeholder.com/300x450/6c757d/ffffff?text=Poster+No+Disponible" class="card-img-top poster-img" alt="{{ movie.title }}">
+            {% endif %}
+            <span class="badge bg-primary genre-badge">{{ movie.get_genre_display }}</span>
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ movie.title }}</h5>
+                <p class="card-text text-muted">
+                    <small>
+                        <i class="bi bi-calendar-event"></i> {{ movie.year }}<br>
+                        <i class="bi bi-person"></i> {{ movie.director }}
+                    </small>
+                </p>
+                <div class="mt-auto">
+                    <a href="{% url 'movie_detail' movie.id %}" class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> Ver Detalles</a>
+                </div>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">Agregado por {{ movie.added_by.username }}</small>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-film display-1 text-muted"></i>
+    <h3 class="text-muted mt-3">No se encontraron películas</h3>
+    <p class="text-muted">Intenta con otros términos de búsqueda o agrega una nueva película.</p>
+    {% if user.is_authenticated %}
+    <a href="{% url 'add_movie' %}" class="btn btn-primary mt-2"><i class="bi bi-plus-circle"></i> Agregar Primera Película</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
