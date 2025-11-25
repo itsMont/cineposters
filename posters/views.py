@@ -6,6 +6,9 @@ from django.http import HttpResponseForbidden
 from .models import Movie
 from .forms import MovieForm
 from dotenv import dotenv_values
+# registro
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 config = dotenv_values(".env")
 OMDB_API = config["OMDB_API_KEY"]
@@ -99,15 +102,19 @@ def edit_movie(request, movie_id):
             
             # Buscar poster actualizado en OMDB API
             try:
-                api_key = "tu-api-key-aqui"
+                api_key = OMDB_API
                 response = requests.get(
                     f"http://www.omdbapi.com/?t={updated_movie.title}&y={updated_movie.year}&apikey={api_key}"
                 )
                 data = response.json()
                 
                 if data.get('Response') == 'True':
-                    updated_movie.poster_url = data.get('Poster', '')
-                    updated_movie.imdb_id = data.get('imdbID', '')
+                    movie.title = data.get('Title', '')
+                    movie.poster_url = data.get('Poster', '')
+                    movie.imdb_id = data.get('imdbID', '')
+                    movie.director = data.get('Director', '')
+                    # En caso de tener género, agrega el primero
+                    movie.genre = data.get('Genre').split(",")[0]
             except Exception as e:
                 print(f"Error al conectar con OMDB: {e}")
             
@@ -136,7 +143,28 @@ def delete_movie(request, movie_id):
     if request.method == 'POST':
         movie_title = movie.title
         movie.delete()
-        messages.success(request, f'🗑️ Película "{movie_title}" eliminada exitosamente!')
+        messages.success(request, f'Película "{movie_title}" eliminada exitosamente!')
         return redirect('movie_list')
     
     return render(request, 'posters/delete_confirm.html', {'movie': movie})
+
+# AGREGAR Registro Usuario
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            
+            # Iniciar sesión automáticamente después del registro
+            from django.contrib.auth import login
+            login(request, user)
+            
+            messages.success(request, '¡Cuenta creada exitosamente! Bienvenido a CinePosters.')
+            return redirect('movie_list')
+        else:
+            messages.error(request, 'Por favor corrige los errores en el formulario.')
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'registration/register.html', {'form': form})
