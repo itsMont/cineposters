@@ -4,7 +4,7 @@ from .models import Movie
 class MovieForm(forms.ModelForm):
     class Meta:
         model = Movie
-        fields = ['title', 'year', 'director', 'genre']
+        fields = ['title', 'year']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -15,20 +15,11 @@ class MovieForm(forms.ModelForm):
                 'placeholder': 'Año de estreno',
                 'min': 1888,
                 'max': 2030
-            }),
-            'director': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Director'
-            }),
-            'genre': forms.Select(attrs={
-                'class': 'form-select'
-            }),
+            })
         }
         labels = {
             'title': 'Título',
-            'year': 'Año de estreno',
-            'director': 'Director',
-            'genre': 'Género'
+            'year': 'Año de estreno'
         }
     
     def clean_year(self):

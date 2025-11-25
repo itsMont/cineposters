@@ -62,8 +62,12 @@ def add_movie(request):
                 data = response.json()
                 
                 if data.get('Response') == 'True':
+                    movie.title = data.get('Title', '')
                     movie.poster_url = data.get('Poster', '')
                     movie.imdb_id = data.get('imdbID', '')
+                    movie.director = data.get('Director', '')
+                    # En caso de tener género, agrega el primero
+                    movie.genre = data.get('Genre').split(",")[0]
             except Exception as e:
                 print(f"Error al conectar con OMDB: {e}")
             

@@ -4,24 +4,24 @@ from django.urls import reverse
 
 class Movie(models.Model):
     GENRE_CHOICES = [
-        ('action', 'Acción'),
-        ('adventure', 'Aventura'),
-        ('comedy', 'Comedia'),
-        ('drama', 'Drama'),
-        ('fantasy', 'Fantasía'),
-        ('horror', 'Terror'),
-        ('sci-fi', 'Ciencia Ficción'),
-        ('thriller', 'Thriller'),
-        ('romance', 'Romance'),
-        ('animation', 'Animación'),
-        ('documentary', 'Documental'),
-        ('other', 'Otro'),
+        ('Action', 'Acción'),
+        ('Adventure', 'Aventura'),
+        ('Comedy', 'Comedia'),
+        ('Drama', 'Drama'),
+        ('Fantasy', 'Fantasía'),
+        ('Horror', 'Terror'),
+        ('Sci-fi', 'Ciencia Ficción'),
+        ('Thriller', 'Thriller'),
+        ('Romance', 'Romance'),
+        ('Animation', 'Animación'),
+        ('Documentary', 'Documental'),
+        ('Other', 'Otro'),
     ]
     
     title = models.CharField(max_length=200, verbose_name="Título")
     year = models.IntegerField(verbose_name="Año de estreno")
     director = models.CharField(max_length=100, verbose_name="Director")
-    genre = models.CharField(max_length=20, choices=GENRE_CHOICES, verbose_name="Género")
+    genre = models.CharField(max_length=200, choices=GENRE_CHOICES, verbose_name="Género")
     poster_url = models.URLField(max_length=500, blank=True, verbose_name="URL del Poster")
     imdb_id = models.CharField(max_length=20, blank=True, verbose_name="ID de IMDB")
     added_by = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Agregado por")
