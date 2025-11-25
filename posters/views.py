@@ -5,6 +5,10 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden
 from .models import Movie
 from .forms import MovieForm
+from dotenv import dotenv_values
+
+config = dotenv_values(".env")
+OMDB_API = config["OMDB_API_KEY"]
 
 # READ - Listar todas las películas
 def movie_list(request):
@@ -51,7 +55,7 @@ def add_movie(request):
             
             # Buscar en OMDB API
             try:
-                api_key = "tu-api-key-aqui"
+                api_key = OMDB_API
                 response = requests.get(
                     f"http://www.omdbapi.com/?t={movie.title}&y={movie.year}&apikey={api_key}"
                 )
@@ -104,7 +108,7 @@ def edit_movie(request, movie_id):
                 print(f"Error al conectar con OMDB: {e}")
             
             updated_movie.save()
-            messages.success(request, '✏️ Película actualizada exitosamente!')
+            messages.success(request, 'Película actualizada exitosamente!')
             return redirect('movie_detail', movie_id=movie.id)
     else:
         form = MovieForm(instance=movie)
