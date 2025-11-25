@@ -68,7 +68,7 @@ def add_movie(request):
                 print(f"Error al conectar con OMDB: {e}")
             
             movie.save()
-            messages.success(request, '🎬 Película agregada exitosamente!')
+            messages.success(request, 'Película agregada exitosamente!')
             return redirect('movie_detail', movie_id=movie.id)
     else:
         form = MovieForm()
